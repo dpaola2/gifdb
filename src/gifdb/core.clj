@@ -5,20 +5,25 @@
 (defn fetch-page [url]
   (html/html-resource (java.net.URL. url)))
 
-(defn extract-sources [image-list]
-  ((image-list :attrs) :src)
+(defn extract-hrefs [imgs]
+  ((imgs :attrs) :href)
   )
 
-(defn fetch-images [url]
+(defn fetch-image-urls [url]
   (map
-   extract-sources
-   (html/select (fetch-page url) [:img])))
+   extract-hrefs
+   (html/select (fetch-page url) [:a])))
 
-(defn fetch-gifs [url]
+(defn gif? [url]
+  (and
+   (not (nil? url))
+   (.contains url ".gif")))
+
+(defn fetch-gif-urls [url]
   (remove
-   (fn [x] (not (.contains x ".gif")))
-   (fetch-images url))
-  )
+   (fn [x]
+     (not (gif? url)))
+   (fetch-image-urls url)))
 
 (defn -main
   "I don't do a whole lot ... yet."
